@@ -17,18 +17,18 @@ int main()
 	fdPortI2C = open(I2C_FICHIER, O_RDWR); // ouverture du 'fichier', création d'un 'file descriptor' vers le port UART
 	if(fdPortI2C == -1)
 	{
-		printf("erreur: I2C initialilse 1\n");
+		printf("erreur: I2C initialisation step 1\n");
 		return -1;
 	}
-	if(ioctl(fdPortI2C, I2C_SLAVE, I2C_ADRESSE) < 0)  // I2C_SLAVE_FORCE if it is already in use by a driver!
+	if(ioctl(fdPortI2C, I2C_SLAVE_FORCE, I2C_ADRESSE) < 0)  // I2C_SLAVE_FORCE if it is already in use by a driver (i2cdetect : UU)
 	{
-		printf("erreur: I2C initialise 2\n");
+		printf("erreur: I2C initialisation step 2\n");
 		close(fdPortI2C);
 		return -1;
 	}
 	
 	// Écriture et Lecture sur le port I2C
-	uint8_t Source;
+	uint8_t Source = 0x75; // registre d'ID du chip I2C
 	uint8_t Destination;
 	uint8_t NombreDOctetsALire = 1;
 	uint8_t NombreDOctetsAEcrire = 1;
@@ -46,9 +46,8 @@ int main()
 		close(fdPortI2C);
 		return -1;
 	}
-	printf("octedt lu: %d", Destination);
+	printf("octets lus: %#04x\n", Destination);
 
 	close(fdPortI2C);
 	return 0;
 }
-
