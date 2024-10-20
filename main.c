@@ -9,54 +9,46 @@
 #define I2C_ADRESSE 0x68 // adresse du Device I2C
 
 
-int fdI2C;  // file descriptor I2C
-
 int main()
 {
-	
-	fdI2C = open(I2C_FICHIER, O_RDWR);
-	if(fdI2C == -1)
+	int fdPortI2C;  // file descriptor I2C
+
+	// Initialisation du port I2C, 
+	fdPortI2C = open(I2C_FICHIER, O_RDWR); // ouverture du 'fichier', création d'un 'file descriptor' vers le port UART
+	if(fdPortI2C == -1)
 	{
 		printf("erreur: I2C initialilse 1\n");
 		return -1;
 	}
-	if(ioctl(fdI2C, I2C_SLAVE, I2C_ADRESSE) < 0)  // I2C_SLAVE_FORCE if it is already in use by a driver!
+	if(ioctl(fdPortI2C, I2C_SLAVE, I2C_ADRESSE) < 0)  // I2C_SLAVE_FORCE if it is already in use by a driver!
 	{
 		printf("erreur: I2C initialise 2\n");
-		close(fdI2C);
+		close(fdPortI2C);
 		return -1;
 	}
 	
-	
-	
-	
-	close(fdI2C);
-	return 0;
-}
+	// Écriture et Lecture sur le port I2C
+	uint8_t Source;
+	uint8_t Destination;
+	uint8_t NombreDOctetsALire = 1;
+	uint8_t NombreDOctetsAEcrire = 1;
 
 
-
-int piloteI2C_ecritDesOctets(uint8_t *Source, uint8_t NombreDOctetsAEcrire)
-{
-	if(write(fdI2C, Source, NombreDOctetsAEcrire) != NombreDOctetsAEcrire)
+	if(write(fdPortI2C, &Source, NombreDOctetsAEcrire) != NombreDOctetsAEcrire)
 	{
-		printf("erreur: piloteI2C_ecritDesOctets\n");
+		printf("erreur: Écriture I2C\n");
+		close(fdPortI2C);
 		return -1;
 	}
+	if (read(fdPortI2C, &Destination, NombreDOctetsALire) != NombreDOctetsALire)
+	{
+		printf("erreur: Lecture I2C\n");
+		close(fdPortI2C);
+		return -1;
+	}
+	printf("octedt lu: %d", Destination);
+
+	close(fdPortI2C);
 	return 0;
 }
 
-int piloteI2C_litDesOctets(uint8_t *Commande, uint8_t LongueurDeLaCommande, uint8_t *Destination, uint8_t NombreDOctetsALire)
-{
-    if (piloteI2C_ecritDesOctets(Commande, LongueurDeLaCommande) < 0)
-    {
-    	printf("erreur: piloteI2C_litDesOctets 1\n");
-    	return -1;
-    }
-	if (read(fdI2C, Destination, NombreDOctetsALire) != NombreDOctetsALire)
-	{
-		printf("erreur: piloteI2C_litDesOctets 2\n");
-		return -1;
-	}
-	return 0;
-}
