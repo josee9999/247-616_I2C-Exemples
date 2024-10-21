@@ -8,7 +8,6 @@
 #define I2C_FICHIER "/dev/i2c-2" // fichier Linux representant le BUS #2
 #define I2C_ADRESSE 0x68 // adresse du Device I2C
 
-
 int main()
 {
 	int fdPortI2C;  // file descriptor I2C
