@@ -13,7 +13,7 @@ int main()
 	int fdPortI2C;  // file descriptor I2C
 
 	// Initialisation du port I2C, 
-	fdPortI2C = open(I2C_FICHIER, O_RDWR); // ouverture du 'fichier', création d'un 'file descriptor' vers le port UART
+	fdPortI2C = open(I2C_FICHIER, O_RDWR); // ouverture du 'fichier', création d'un 'file descriptor' vers le port I2C
 	if(fdPortI2C == -1)
 	{
 		printf("erreur: I2C initialisation step 1\n");
@@ -47,6 +47,6 @@ int main()
 	}
 	printf("octets lus: %#04x\n", Destination);
 
-	close(fdPortI2C);
+	close(fdPortI2C); /// Fermeture du 'file descriptor'
 	return 0;
 }
